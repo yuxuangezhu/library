@@ -5,7 +5,12 @@ a {
 	color: #000;
 	text-decoration: none;
 }
-
+body{
+	background-image: url(../images/banner-one.jpg);
+}
+.bg_opacity{
+	background: rgba(255,255,255,0.6);
+}
 .message_c img{
 	width:100%;
 	cursor:pointer;
@@ -103,14 +108,16 @@ p.user_online {
 	line-height: 25px;
 	margin: 0;
 	margin-bottom: 5px;
-	background: #ddd;
 	float: left;
 	width: 100%;
+	cursor: pointer;
 }
 #console_name{
 	margin: 5px;
 	margin-left: 0px;
 	text-align: center;
+	color: #fff;
+	font-size: 18px;
 }
 /*
 *响应式样式
@@ -176,7 +183,7 @@ body{
 	border-radius: 5px;
 	display: block;
 	margin-top: 5px;
-	background-color: #eee;
+	background-color: #fff;
 	font-size:10px;
 	overflow:hidden;
 }
@@ -235,14 +242,14 @@ body{
 }
 .select_face{
 	display:none;
-	width: 46%;
+	width: 47%;
 	background-color: #eee;
 	position: absolute;
 	bottom: 24%;
 	margin-left: 1%;
 	box-shadow: 0px 0px 29px #888;
 	border-radius: 10px 10px 10px 0px;
-	opacity: 0.8;
+	/*opacity: 0.8;*/
 	overflow: hidden;
 	height: 200px;
 	overflow-y: scroll;
@@ -340,7 +347,7 @@ body{
 	border-radius: 5px;
 	display: block;
 	margin-top: 5px;
-	background-color: #eee;
+	background-color: #fff;
 	font-size:10px;
 	overflow:hidden;
 }
@@ -406,7 +413,7 @@ body{
 	margin-left: 5%;
 	box-shadow: 0px 0px 29px #888;
 	border-radius: 10px 10px 10px 0px;
-	opacity: 0.8;
+	/*opacity: 0.8;*/
 	overflow: hidden;
 	height: 200px;
 	overflow-y: scroll;

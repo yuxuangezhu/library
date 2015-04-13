@@ -12,18 +12,18 @@
 </script>
 </head> 
 <body>
-<section class="chat_left">
+<section class="chat_left bg_opacity">
 	<div class="chat_left_title">在线用户</div>
 	<div class="chat_left_box"></div>
 </section>
 <section class="chat_middle">
-	<div id="messageBox" class="message_box"></div>
-	<div class="quick_button">
+	<div id="messageBox" class="message_box bg_opacity"></div>
+	<div class="quick_button bg_opacity">
 		<div class="select_face"></div>
 		<img src="images/face_img/smilea_org.gif" class="face" alt="表情">
 	</div>
 	<div class="message_input">
-		<textarea type="text" name="console_input" id="console_input" value="" ></textarea>
+		<textarea type="text" class="bg_opacity" id="console_input" value="" ></textarea>
 		<div id="console_name" contenteditable="false" class="user_name_off">websocket</div> 
 		<button type="submit" name="console_send" id="console_send">发送</button>
 		<button class="switch">开启</button>
@@ -39,6 +39,13 @@
 		<input type="text" style="width: 90%;margin: 20px;height: 40px;font-size: 20px;">
 		<button style="width: 80%;height: 40px;">确认</button>
 	</div>
+</div>
+<div id="single" style="width: 450px; height: 600px; position: fixed; top: 0px; left: 0px; display: none;">
+	<div style="height: 20px;width: 100%;background: #fff;">
+		<span style="height: 20px;width: 80%;display: -webkit-box;float: left;"></span>
+		<em style="width: 20px;height: 20px;display: -webkit-box;float: right;font-size: 20px;cursor: pointer;">X</em>
+	</div>
+	<iframe src="" style="width: 99%; height: 100%;"></iframe>
 </div>
 </body>
 </html>

@@ -63,6 +63,12 @@ socket.on('connection', function(client) {
 			case "chengeName":
 				chengeName(event)
 				break;
+			case "singleChat":
+				singleChat(event)
+				break;
+			case "noChat":
+				noChat(event)
+				break;
 			default:
 				if (event.switchLock == 0) {
 					if (event.content.length <= 400) {
@@ -247,4 +253,16 @@ function chengeName (event) {
 	socket.send(["chengeName", {"uid": uid,"user": user}])
 	socket.send(["pageClose", userOnline])
 	userNum = undefined;
+}
+function singleChat(event){
+	var from = event.to;
+	var to = event.from;
+	var chat_name = event.user;
+	socket.send(["singleChat", {"uid": from,"to":to,"chat_name": chat_name}])
+}
+function noChat(event) {
+	var from = event.to;
+	var to = event.from;
+	var chat_name = event.user;
+	socket.send(["noChat", {"uid": from,"to":to,"chat_name": chat_name}])
 }

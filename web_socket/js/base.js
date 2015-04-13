@@ -37,6 +37,7 @@ $(document).ready(function() {
 		contentFocus()
 	});
 	$("#console_input").blur(function() { //内容输入框失去焦点
+		$("#console_input").addClass("bg_opacity")
 		clearInterval(timeOut) //删除计时事件
 	});
 
@@ -100,7 +101,28 @@ $(document).ready(function() {
 	})
 	$(".chat_left").click(function() {
 			chat_left();
-		})
+	})
+	$(".chat_left_box").delegate("p","click",function(){
+		var to = $(this).attr("touid");
+		var from = localStorage.uid;
+		var chat_name = $(this).find(".user_online_name").text();
+		if(from == to){
+			console.log("不能和自己聊天")
+		}else{
+			single_chat(from,to,chat_name)
+			var message = {
+				"user": localStorage.userName,
+				"to": to,
+				"from": uid,
+				"messType": "singleChat"
+			}
+			socket.send(message); //发送信息到服务器
+		}
+	})
+	$("#single em").click(function(){
+		$("#single").css("display","none")
+		$("#single iframe").attr("src","");
+	})
 		//函数库
 		//
 	function pageStart() {
@@ -161,9 +183,24 @@ $(document).ready(function() {
 					break
 				case "maxNum":
 					console.log("maxNum")
-					break
+					break 
 				case "chengeName":
 					localStorage.userName = event[1].user;
+					break
+				case "singleChat":
+					var from = event[1].uid;
+					var to = event[1].to;
+					var chat_name = event[1].chat_name;
+					if(confirm(chat_name+'请求与你私聊,是否同意')){
+						single_chat(from,to,chat_name)
+					}else{
+						no_chat(from,to)
+					}
+					break
+				case "noChat":
+					alert(chat_name+"拒绝了你的请求")
+					$("#single").css("display","none")
+					$("#single iframe").attr("src","");
 					break
 					// case "insSQL":
 					// 	if (event[1].err) {
@@ -197,7 +234,7 @@ $(document).ready(function() {
 				case "pageOpen":
 					var sHTML = "";
 					for (i = 0; i < event[1].length; i++) {
-						sHTML = sHTML + '<p class="user_online"><span class="user_online_uid">' + event[1][i].uid + '</span><span class="user_online_name"><a href="single.html?from=' + uid + '&to=' + event[1][i].uid + '" target="_blank">' + event[1][i].user + '</a></span></p>';
+						sHTML = sHTML + '<p class="user_online" touid="'+ event[1][i].uid +'"><span class="user_online_uid">' + event[1][i].uid + '</span><span class="user_online_name">' + event[1][i].user + '</span></p>';
 					}
 					$(".chat_left_box").html(sHTML)
 					break
@@ -207,6 +244,12 @@ $(document).ready(function() {
 						sHTML = sHTML + '<p class="user_online"><span class="user_online_uid">' + event[1][i].uid + '</span><span class="user_online_name"><a href="single.html?from=' + uid + '&to=' + event[1][i].uid + '" target="_blank">' + event[1][i].user + '</a></span></p>';
 					}
 					$(".chat_left_box").html(sHTML)
+					break
+				case "singleChat":
+					console.log("连接成功")
+					break
+				case "noChat":
+					console.log("拒绝连接")
 					break
 				default:
 					if (event.switchLock == 1) {
@@ -297,6 +340,7 @@ $(document).ready(function() {
 		}
 		checkEdit();
 		$(".select_face").css("display", "none");
+		$("#console_input").removeClass("bg_opacity")
 	}
 
 	function editName() {
@@ -347,6 +391,7 @@ $(document).ready(function() {
 	}
 
 	function contentBlur() {
+		$("#console_input").addClass("bg_opacity")
 		if (switchLock == 1) {
 			$("#console_input").blur()
 		} else {
@@ -402,15 +447,29 @@ $(document).ready(function() {
 			$(".chat_left").removeClass("block")
 			$(".left_button").css({
 				"left": "0px",
-				"transform": "rotate(0deg)"
+				"transfrom": "rotate(0deg)"
 			})
 		} else {
 			$(".chat_left").css("margin-left", "1%");
 			$(".chat_left").addClass("block")
 			$(".left_button").css({
 				"left": "200px",
-				"transform": "rotate(180deg)"
+				"transfrom": "rotate(180deg)"
 			})
 		}
+	}
+	function single_chat(from,to,chat_name){
+		var iframe_url = 'single.html?from=' + from + '&to=' + to;
+		$("#single iframe").attr("src",iframe_url);
+		$("#single span").text("正在与"+chat_name+"聊天")
+		$("#single").css("display","block")
+	}
+	function no_chat(from,to){
+		var message = {
+			"user": localStorage.userName,
+			"uid": to,
+			"messType": "noChat"
+		}
+		socket.send(message); //发送信息到服务器
 	}
 });
