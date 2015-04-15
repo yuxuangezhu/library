@@ -250,7 +250,7 @@ function chengeName (event) {
 			"uid": uid
 		})
 	}
-	socket.send(["chengeName", {"uid": uid,"user": user}])
+	socket.emit('message', ["chengeName", {"uid": uid,"user": user}]);
 	socket.send(["pageClose", userOnline])
 	userNum = undefined;
 }
@@ -261,7 +261,7 @@ function singleChat(event){
 	socket.send(["singleChat", {"uid": from,"to":to,"chat_name": chat_name}])
 }
 function noChat(event) {
-	var from = event.to;
+	var from = event.uid;
 	var to = event.from;
 	var chat_name = event.user;
 	socket.send(["noChat", {"uid": from,"to":to,"chat_name": chat_name}])

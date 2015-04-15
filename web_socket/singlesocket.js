@@ -6,9 +6,9 @@ var userNum;
 function handleError() {
 	conn = mysql.createConnection({
 		host: 'localhost',
-		user: 'nodejs',
-		password: 'nodejs',
-		database: 'nodejs',
+		user: 'websocket',
+		password: 'websocket',
+		database: 'websocket',
 		port: 3306
 	});
 
@@ -43,6 +43,7 @@ var server = http.createServer(function(req, res) {
 	res.end('<h1>Hello Socket Lover!</h1>');
 });
 var userOnline = {};
+var chatRecord = [];
 //端口8020
 server.listen(8010);
 //创建socket
@@ -55,7 +56,15 @@ socket.on('connection', function(client) {
 		//console.log('客户端消息',event);
 		switch (event.messType) {
 			case "pageOpen":
+				chatRecord = [];
 				startPage(event); //页面登录状态验证
+				var from = event.fromUid;
+				var to = event.toUid;
+				var values = 'uid="'+from+'"';
+				setSql.selSQL("message",values)
+				// var values = 'uid="'+to+'"&&touid="'+from+'"';
+				// setSql.selSQL("message",values)
+				// console.log(chatRecord)
 				break;
 			case "pageClose":
 				closePage(event)
@@ -64,9 +73,17 @@ socket.on('connection', function(client) {
 				chengeName(event)
 				break;
 			default:
+				var fromUid = event.uid;
+				var toUid = event.to;
 				if (event.switchLock == 0) {
 					if (event.content.length <= 400) {
 						checkFace(event);
+						var uid = event.uid;
+						var user = event.user;
+						var content = event.content;
+						var toUid = event.toUid;
+						var values = uid+'","'+content+'","'+user+'","'+toUid;
+						setSql.insSQL("message","uid,content,username,touid",values)
 					} else {
 						var errMessage = {
 							"errContent": "发送字数超出限制!请调整至200字一下,或分条发送.",
@@ -110,40 +127,22 @@ function checkFace(event) {
 }
 
 var setSql = {
-	insSQL: function(uid, db_name, field, values) { //数据库添加函数
-		var insertSQL = 'insert into ' + db_name + '(' + field + ') values("' + values + '")';
+	insSQL: function(db_name,field,values) { //数据库添加函数
+		var insertSQL = 'insert into ' + db_name +  ' (' + field + ') values ("' + values + '")'
+		//var insertSQL = 'insert into ' + db_name + ' (' + field + ') values("' + values + '")';
 		console.log(insertSQL)
 		conn.query(insertSQL, function(err1, res1) {
-			if (err1) {
-				if (err1.code == "ER_DUP_ENTRY") {
-					socket.send(["insSQL", {
-						"err": true,
-						"errCode": "用户名已存在!",
-						"uid": uid
-					}])
-					console.log(333)
-				} else {
-					console.log(err1.code)
-				}
-			} else {
-				socket.send(["insSQL", {
-					"err": false,
-					"errCode": "注册成功!",
-					"uid": uid
-				}])
-				console.log("注册成功")
-				console.log(err1)
-				console.log(values)
-			}
+			console.log(err1)
 		})
 	},
 
-	selSQL: function(uid, db_name, field, num) { //数据库查找函数
-		var selectSQL = 'select ' + field + ' from ' + db_name + ' limit ' + num;
+	selSQL: function(db_name, values) { //数据库查找函数
+		var selectSQL = 'SELECT * FROM '+db_name+' WHERE '+values
+		console.log(selectSQL)
 		conn.query(selectSQL, function(err1, res1) {
-			res1.unshift("selSQL");
-			console.log(res1.length)
-			socket.send(res1)
+			chatRecord[0] = res1;
+			console.log("结果："+chatRecord)
+			socket.emit('message', ["chatRecord",chatRecord]);
 		})
 	},
 
@@ -183,10 +182,12 @@ var setSql = {
 }
 
 function startPage(event) {
+	var fromUid = event.fromUid;
+	var toUid = event.toUid;
 	userOnline.fromUid = event.fromUid;
 	userOnline.toUid = event.toUid;
 	console.log(userOnline)
-	socket.send(["pageOpen",userOnline])
+	socket.emit('message', ["pageOpen",userOnline])
 }
 
 function closePage(event) {
@@ -223,7 +224,7 @@ function chengeName (event) {
 			"uid": uid
 		})
 	}
-	socket.send(["chengeName", {"uid": uid,"user": user}])
+	socket.emit('message', ["chengeName", {"uid": uid,"user": user}]);
 	socket.send(["pageClose", userOnline])
 	userNum = undefined;
 }

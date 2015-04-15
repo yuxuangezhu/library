@@ -145,7 +145,7 @@ $(document).ready(function() {
 			var typeData = event[0];
 			switch (typeData) {
 				case "pageOpen":
-					alert(event[1].message)
+					alert_box(event[1].message)
 					$("#console_name").text(localStorage.userName)
 					console.log("pageOpen");
 					break
@@ -198,6 +198,9 @@ $(document).ready(function() {
 					}
 					$(".chat_left_box").html(sHTML)
 					break
+				case "chatRecord":
+					
+					break;
 				default:
 					if (event.switchLock == 1) {
 						if (event.send) {
@@ -228,7 +231,8 @@ $(document).ready(function() {
 			"user": localStorage.userName,
 			"time": time.toLocaleTimeString(),
 			"content": $('#console_input').val(),
-			"uid": uid
+			"uid": uid,
+			"toUid":to
 		}
 		socket.send(message); //发送信息到服务器
 		timeOut = setTimeout(check, 500) //设置计时函数
@@ -247,8 +251,8 @@ $(document).ready(function() {
 		contentBlur();
 		nameCheck(); //检测用户名
 		checkEdit();
-		if ($("#console_input").val() == "") {
-			alert("发送内容不能为空!")
+		if (!($("#console_input").val())) {
+			alert_box("发送内容不能为空!")
 			return
 		}
 		console.log(111)
@@ -262,6 +266,7 @@ $(document).ready(function() {
 				"time": time.toLocaleTimeString(),
 				"content": $('#console_input').val(),
 				"uid": uid,
+				"toUid":to
 			}
 			socket.send(message); //发送信息到服务器
 			$("#console_input").val("")
@@ -368,7 +373,18 @@ $(document).ready(function() {
 		return (S4() + S4() + S4() + S4() + S4());
 	};
 
-
+	function alert_box(text){
+		$("#alert_box").text(text)
+		$("#alert_box").css({
+			'display':'block',
+			'background':'#FC7728',
+		})
+		setTimeout(function(){
+			$("#alert_box").css({
+				'display':'none'
+			})
+		},3000)
+	}
 	// function unloadPageTip (event){
 	// 	return "您编辑的文章内容还没有进行保存!"
 	// };
@@ -399,6 +415,19 @@ a {
 
 body{
 	background-image: url(images/banner-one.jpg);
+}
+textarea{
+	resize:none;
+}
+#alert_box{
+	width: 100%;
+	position: fixed;
+	top: 0;
+	margin: 0;
+	background: #eee;
+	display: none;
+	text-align: center;
+	transition: background 1s;
 }
 .bg_opacity{
 	background: rgba(255,255,255,0.6);
@@ -683,11 +712,12 @@ body{
 	<img src="images/face_img/smilea_org.gif" class="face" alt="表情">
 </div>
 <div class="message_input">
-	<textarea type="text" class="bg_opacity" id="console_input" value="" ></textarea>
+	<textarea type="text" class="bg_opacity" id="console_input" value=""></textarea>
 	<div id="console_name" contenteditable="false" class="user_name_off">websocket</div> 
 	<button type="submit" name="console_send" id="console_send">发送</button>
 	<button class="switch">开启</button>
 </div>
+<p id="alert_box"></p>
 </body> 
  
 </html>

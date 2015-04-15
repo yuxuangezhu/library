@@ -8,6 +8,19 @@ a {
 body{
 	background-image: url(../images/banner-one.jpg);
 }
+textarea{
+	resize:none;
+}
+#alert_box{
+	width: 100%;
+	position: fixed;
+	top: 0;
+	margin: 0;
+	background: #eee;
+	display: none;
+	text-align: center;
+	transition: background 1s;
+}
 .bg_opacity{
 	background: rgba(255,255,255,0.6);
 }
@@ -80,6 +93,9 @@ body{
 	height: 25%;
 	left: 30%;
 	margin-top: 90px;
+	top: 15px;
+	max-width: 350px;
+	min-width: 280px;
 }
 
 .chat_left_title {
@@ -433,7 +449,6 @@ body{
 	margin: 5px auto;
 	margin-left: -220px;
 	position: absolute;
-	background: #fff;
 	transition: margin-left 500ms;
 }
 .chat_middle{

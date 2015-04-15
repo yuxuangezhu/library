@@ -107,7 +107,7 @@ $(document).ready(function() {
 		var from = localStorage.uid;
 		var chat_name = $(this).find(".user_online_name").text();
 		if(from == to){
-			console.log("不能和自己聊天")
+			alert_box("不能和自己聊天")
 		}else{
 			single_chat(from,to,chat_name)
 			var message = {
@@ -177,7 +177,7 @@ $(document).ready(function() {
 			var typeData = event[0];
 			switch (typeData) {
 				case "pageOpen":
-					alert(event[1].message)
+					alert_box(event[1].message)
 					$("#console_name").text(localStorage.userName)
 					console.log("pageOpen");
 					break
@@ -198,6 +198,7 @@ $(document).ready(function() {
 					}
 					break
 				case "noChat":
+					var chat_name = event[1].chat_name;
 					alert(chat_name+"拒绝了你的请求")
 					$("#single").css("display","none")
 					$("#single iframe").attr("src","");
@@ -300,8 +301,8 @@ $(document).ready(function() {
 		contentBlur();
 		nameCheck(); //检测用户名
 		checkEdit();
-		if ($("#console_input").val() == "") {
-			alert("发送内容不能为空!")
+		if (!($("#console_input").val())) {
+			alert_box("发送内容不能为空!")
 			return
 		}
 		console.log(111)
@@ -447,14 +448,14 @@ $(document).ready(function() {
 			$(".chat_left").removeClass("block")
 			$(".left_button").css({
 				"left": "0px",
-				"transfrom": "rotate(0deg)"
+				'transform':'rotate(0deg)'
 			})
 		} else {
-			$(".chat_left").css("margin-left", "1%");
+			$(".chat_left").css("margin-left", "0");
 			$(".chat_left").addClass("block")
 			$(".left_button").css({
-				"left": "200px",
-				"transfrom": "rotate(180deg)"
+				"left": "197px",
+				'transform':'rotate(180deg)'
 			})
 		}
 	}
@@ -468,8 +469,21 @@ $(document).ready(function() {
 		var message = {
 			"user": localStorage.userName,
 			"uid": to,
+			"from":from,
 			"messType": "noChat"
 		}
 		socket.send(message); //发送信息到服务器
+	}
+	function alert_box(text){
+		$("#alert_box").text(text)
+		$("#alert_box").css({
+			'display':'block',
+			'background':'#FC7728',
+		})
+		setTimeout(function(){
+			$("#alert_box").css({
+				'display':'none'
+			})
+		},3000)
 	}
 });
