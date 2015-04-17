@@ -9,6 +9,7 @@
 var socket, timeOut, messType, SQL, uid, userName,from,to;
 var switchLock = 0;
 var userLock = 0;
+var chatLock = 0;
 var webChat = [];
 var lock = 0; //初始化check变量
 $(document).ready(function() {
@@ -200,10 +201,13 @@ $(document).ready(function() {
 					$(".chat_left_box").html(sHTML)
 					break
 				case "chatRecord":
-					webChat.concat(event[1])
-					for(var i = 0; i < webChat.length; i++){
-						console.log(webChat[i])
-					}
+					if(chatLock == 0){
+						chatLock = 1;
+						webChat.concat(event[1])
+					}else{
+						webChat.concat(event[1])
+						console.log(webChat)
+					}					
 					break;
 				default:
 					if (event.switchLock == 1) {
