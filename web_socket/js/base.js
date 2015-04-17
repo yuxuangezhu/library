@@ -17,7 +17,7 @@ $(document).ready(function() {
 			"messType": "pageOpen"
 		})
 	}
-	socket.on('message', function(event) { //监听服务器信息
+	socket.on("message", function(event) { //监听服务器信息
 		//debugger
 		handleMessage(event);
 	});

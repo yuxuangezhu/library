@@ -2,6 +2,8 @@
 var mysql = require('mysql');
 var conn;
 var userNum;
+var fromUid;
+var toUid;
 
 function handleError() {
 	conn = mysql.createConnection({
@@ -59,11 +61,11 @@ socket.on('connection', function(client) {
 				chatRecord = [];
 				startPage(event); //页面登录状态验证
 				var from = event.fromUid;
-				var to = event.toUid;
+				var toUid = event.toUid;
 				var values = 'uid="'+from+'"';
-				setSql.selSQL("message",values)
-				// var values = 'uid="'+to+'"&&touid="'+from+'"';
-				// setSql.selSQL("message",values)
+				setSql.selSQL("message",values,event)
+				var values = 'uid="'+toUid+'"';
+				setSql.selSQL("message",values,event)
 				// console.log(chatRecord)
 				break;
 			case "pageClose":
@@ -73,8 +75,6 @@ socket.on('connection', function(client) {
 				chengeName(event)
 				break;
 			default:
-				var fromUid = event.uid;
-				var toUid = event.to;
 				if (event.switchLock == 0) {
 					if (event.content.length <= 400) {
 						checkFace(event);
@@ -90,7 +90,9 @@ socket.on('connection', function(client) {
 							"messageType": "maxNum",
 							"uid": event.uid
 						}
-						socket.send(errMessage);
+						var fromUid = event.uid;
+						var toUid = event.to;
+						socket.emit(fromUid,errMessage);
 					}
 				} else {
 					checkFace(event);
@@ -105,6 +107,8 @@ socket.on('connection', function(client) {
 });
 
 function checkFace(event) {
+	var fromUid = event.uid;
+	var toUid = event.toUid;
 	var face_content = event.content;
 	// face_box = ["smilea_org.gif", "tootha_org.gif", "laugh.gif", "tza_org.gif", "kl_org.gif", "kbsa_org.gif", "cj_org.gif", "shamea_org.gif", "zy_org.gif", "bz_org.gif", "bs2_org.gif", "lovea_org.gif", "sada_org.gif", "heia_org.gif", "qq_org.gif", "sb_org.gif", "mb_org.gif", "ldln_org.gif", "yhh_org.gif", "zhh_org.gif", "x_org.gif", "cry.gif", "wq_org.gif", "t_org.gif", "k_org.gif", "bba_org.gif", "angrya_org.gif", "yw_org.gif", "cza_org.gif", "88_org.gif", "sk_org.gif", "sweata_org.gif", "sleepya_org.gif", "sleepa_org.gif", "money_org.gif", "sw_org.gif", "cool_org.gif", "hsa_org.gif", "hatea_org.gif", "gza_org.gif", "dizzya_org.gif", "bs_org.gif", "crazya_org.gif", "h_org.gif", "yx_org.gif", "nm_org.gif", "doge_org.gif", "horse2_org.gif","bmzuocao_org.gif", "bmzhuakuang_org.gif", "bmzhongqiang_org.gif", "bmzhenjing_org.gif", "bmzan_org.gif", "bmxiyue_org.gif", "bmxingwu_org.gif", "bmxingfen_org.gif", "bmxielei_org.gif", "bmwabikong_org.gif", "bmtushetou_org.gif", "bmtucao_org.gif", "bmtousu_org.gif", "bmtiaosheng_org.gif", "bmtiaopi_org.gif", "bmtaolun_org.gif", "bmtaitui_org.gif", "bmsikao_org.gif", "bmshengqi_org.gif", "bmqinwen_org.gif", "bmqingxing_org.gif", "bmneihan_org.gif", "bmmanglu_org.gif", "bmluanru_org.gif", "bmluanmeng_org.gif", "bmliulei_org.gif", "bmliukoushui_org.gif", "bmliubiti_org.gif", "bmliguo_org.gif", "bmliezui_org.gif", "bmlaladui_org.gif", "bmkusu_org.gif", "bmkuqi_org.gif", "bmkubi_org.gif"];
 	// face_name = ["[呵呵]", "[嘻嘻]", "[哈哈]", "[可爱]", "[可怜]", "[挖鼻屎]", "[吃惊]", "[害羞]", "[挤眼]", "[闭嘴]", "[鄙视]", "[爱你]", "[泪]", "[偷笑]", "[亲亲]", "[生病]", "[太开心]", "[懒得理你]", "[右哼哼]", "[左哼哼]", "[嘘]", "[衰]", "[委屈]", "[吐]", "[打哈气]", "[抱抱]", "[怒]", "[疑问]", "[馋嘴]", "[拜拜]", "[思考]", "[汗]", "[困]", "[睡觉]", "[钱]", "[失望]", "[酷]", "[花心]", "[哼]", "[鼓掌]", "[晕]", "[悲伤]", "[抓狂]", "[黑线]", "[阴险]", "[怒骂]", "[doge]", "[神马]","[bm做操]", "[bm抓狂]", "[bm中枪]", "[bm震惊]", "[bm赞]", "[bm喜悦]", "[bm醒悟]", "[bm兴奋]", "[bm血泪]", "[bm挖鼻孔]", "[bm吐舌头]", "[bm吐槽]", "[bm投诉]", "[bm跳绳]", "[bm调皮]", "[bm讨论]", "[bm抬腿]", "[bm思考]", "[bm生气]", "[bm亲吻]", "[bm庆幸]", "[bm内涵]", "[bm忙碌]", "[bm乱入]", "[bm卖萌]", "[bm流泪]", "[bm流口水]", "[bm流鼻涕]", "[bm路过]", "[bm咧嘴]", "[bm啦啦队]", "[bm哭诉]", "[bm哭泣]", "[bm苦逼]"];
@@ -123,7 +127,8 @@ function checkFace(event) {
 		}
 	}
 	event.content = face_content;
-	socket.send(event);
+	socket.emit(toUid,event);
+	socket.emit(fromUid,event);
 }
 
 var setSql = {
@@ -136,13 +141,30 @@ var setSql = {
 		})
 	},
 
-	selSQL: function(db_name, values) { //数据库查找函数
-		var selectSQL = 'SELECT * FROM '+db_name+' WHERE '+values
+	selSQL: function(db_name, values,event) { //数据库查找函数
+		var fromUid = event.fromUid;
+		var toUid = event.toUid;
+		var selectSQL = 'select * from '+db_name+' where '+values
 		console.log(selectSQL)
 		conn.query(selectSQL, function(err1, res1) {
-			chatRecord[0] = res1;
+			if(res1[0].uid == toUid){
+				var chat = [];
+				for(var i = 0; i < res1.length; i++){
+					if(res1[i].touid == fromUid){
+						chat.unshift(res1[i])
+					}
+				}
+			}else{
+				var chat = [];
+				for(var i = 0; i < res1.length; i++){
+					if(res1[i].touid == toUid){
+						chat.unshift(res1[i])
+					}
+				}
+			}
+			chatRecord = chat;
 			console.log("结果："+chatRecord)
-			socket.emit('message', ["chatRecord",chatRecord]);
+			socket.emit(fromUid, ["chatRecord",chatRecord]);
 		})
 	},
 
