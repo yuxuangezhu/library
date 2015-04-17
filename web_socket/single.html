@@ -203,9 +203,15 @@ $(document).ready(function() {
 				case "chatRecord":
 					if(chatLock == 0){
 						chatLock = 1;
-						webChat.concat(event[1])
+						webChat = webChat.concat(event[1])
 					}else{
-						webChat.concat(event[1])
+						webChat = webChat.concat(event[1])
+						webChat = webChat.sort(chatSort("time"))
+						if(webChat.length > 6){
+							var num = webChat.length - 6;
+							webChat = webChat.splice(0,num)
+						}
+						webChatInner(webChat)
 						console.log(webChat)
 					}					
 					break;
@@ -393,6 +399,31 @@ $(document).ready(function() {
 			})
 		},3000)
 	}
+
+	function chatSort(value){
+            return function(object1, object2){
+                var value1 = object1[value];
+                var value2 = object2[value];
+                if (value1 < value2){
+                    return -1;
+                } else if (value1 > value2){
+                    return 1;
+                } else{
+                    return 0;
+                }
+            }
+        }
+
+        function webChatInner(webChat){
+        	var chatHtml = "";
+        	for(var i = 0; i < webChat.length; i++){
+        		if(webChat[i].username == localStorage.userName){
+        			$("#messageBox").append("<p class='p_float_right'><span class='message_n'>" + webChat[i].username + "  " + webChat[i].time + "</span><span class='message_c'>" + webChat[i].content + "</span></p>")
+        		}else{
+        			$("#messageBox").append("<p class='p_float_left'><span class='message_n'>" + webChat[i].username + "  " + webChat[i].time + "</span><span class='message_c'>" + webChat[i].content + "</span></p>")
+        		}
+        	}
+        }
 	// function unloadPageTip (event){
 	// 	return "您编辑的文章内容还没有进行保存!"
 	// };
