@@ -6,7 +6,7 @@ $(document).ready(function() {
 	//页面初始化
 	pageStart();
 	//websockets连接模块
-	socket = io.connect('http://123.57.210.227:8020/'); //链接websocket服务器
+	socket = io.connect('127.0.0.1:8020/'); //链接websocket服务器
 	if (!localStorage.userName) {
 		setUserName();
 	} else {

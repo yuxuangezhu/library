@@ -15,7 +15,7 @@ $(document).ready(function() {
 	//页面初始化
 	pageStart();
 	//websockets连接模块
-	socket = io.connect('http://123.57.210.227:8010/');
+	socket = io.connect('127.0.0.1:8010/');
 	socket.send({"fromUid":from,"toUid":to,"messType":"pageOpen"})
 	console.log(from+","+to)
 	socket.on(uid, function(event) { //监听服务器信息
