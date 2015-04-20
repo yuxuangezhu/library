@@ -155,8 +155,7 @@ var setSql = {
 
 	delSQL: function(db_name, field, values) { //数据库删除函数
 		var deleteSQL = 'delete from ' + db_name + ' where ' + field + ' = "' + values + '"';
-		conn.query(deleteSQL, function(err1, res1) {
-		})
+		conn.query(deleteSQL, function(err1, res1) {})
 	},
 
 	upSQL: function(uid, db_name, field, values, new_values) { //数据库更新函数
@@ -202,7 +201,7 @@ function startPage(event) {
 			"user": user,
 			"uid": uid
 		})
-	}else{
+	} else {
 		userOnline.unshift({
 			"user": user,
 			"uid": uid
@@ -230,7 +229,8 @@ function closePage(event) {
 	}
 	userNum = undefined;
 }
-function chengeName (event) {
+
+function chengeName(event) {
 	var user = event.user;
 	var uid = event.uid;
 	for (i = 0; i < userOnline.length; i++) {
@@ -244,25 +244,38 @@ function chengeName (event) {
 			"user": user,
 			"uid": uid
 		})
-	}else{
+	} else {
 		userOnline.unshift({
 			"user": user,
 			"uid": uid
 		})
 	}
-	socket.emit('message', ["chengeName", {"uid": uid,"user": user}]);
+	socket.emit('message', ["chengeName", {
+		"uid": uid,
+		"user": user
+	}]);
 	socket.send(["pageClose", userOnline])
 	userNum = undefined;
 }
-function singleChat(event){
+
+function singleChat(event) {
 	var from = event.to;
 	var to = event.from;
 	var chat_name = event.user;
-	socket.send(["singleChat", {"uid": from,"to":to,"chat_name": chat_name}])
+	socket.send(["singleChat", {
+		"uid": from,
+		"to": to,
+		"chat_name": chat_name
+	}])
 }
+
 function noChat(event) {
 	var from = event.uid;
 	var to = event.from;
 	var chat_name = event.user;
-	socket.send(["noChat", {"uid": from,"to":to,"chat_name": chat_name}])
+	socket.send(["noChat", {
+		"uid": from,
+		"to": to,
+		"chat_name": chat_name
+	}])
 }
