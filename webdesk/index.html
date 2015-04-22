@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>新建标签</title>
+<script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+	var allUr
+	if(localStorage.webSiteInfo){
+		allUrl = $.parseJSON(localStorage.webSiteInfo)
+	}else{
+		allUrl = [
+			{
+				"url":"https://www.baidu.com",
+				"site":"百度",
+				"imgUrl":"images/baidu.com.png"
+			},
+			{
+				"url":"http://www.jd.com",
+				"site":"京东",
+				"imgUrl":"images/jd.com.png"
+			},
+			{
+				"url":"http://www.weibo.com",
+				"site":"微博",
+				"imgUrl":"images/weibo.com.png"
+			},
+			{
+				"url":"http://www.taobao.com",
+				"site":"淘宝",
+				"imgUrl":"images/taobao.com.png"
+			},
+			{
+				"url":"http://www.youku.com",
+				"site":"优酷",
+				"imgUrl":"images/youku.com.png"
+			},
+			{
+				"url":"https://www.ctrip.com",
+				"site":"携程",
+				"imgUrl":"images/ctrip.com.png"
+			},
+			{
+				"url":"http://www.dangdang.com",
+				"site":"当当",
+				"imgUrl":"images/dangdang.com.png"
+			},
+			{
+				"url":"http://www.yixun.com",
+				"site":"易迅",
+				"imgUrl":"images/yixun.com.png"
+			},
+			{
+				"url":"http://www.renren.com",
+				"site":"人人",
+				"imgUrl":"images/renren.com.png"
+			}
+		]
+		set_Site(allUrl);
+	}
+
+	var sHtml = ""
+	for(var i = 0; i < allUrl.length; i++){
+		sHtml = sHtml + '<li><button class="boxClose"></button><a href="'+allUrl[i].url+'" style="background:url('+allUrl[i].imgUrl+') no-repeat center 25px"></a><span><a href="'+allUrl[i].url+'">'+allUrl[i].site+'</a></span></li>'
+	}
+	$(".page_card_box li").before(sHtml)
+
+// 页面事件绑定
+	$(".page_card_box li").on("mouseover",function(){
+		$(this).find("span").css("margin-top","-30px");
+	})
+	$(".page_card_box li").on("mouseout",function(){
+		$(this).find("span").css("margin-top","0px");
+	})
+	$(document).bind("contextmenu",function(e){
+		if($(".page_card_box").hasClass("rightClick")){
+			$(".page_card_box").removeClass("rightClick");
+			$(".page_card_box button").css("display","none")
+		}else{
+			$(".page_card_box").addClass("rightClick");
+			$(".page_card_box button").css("display","block")
+			$(".page_card_box button").on("mouseover",function(){
+				$(this).css({
+					"background":"url(images/idialog_s.png) no-repeat scroll 0px -94px",
+					"transform": "rotate(90deg)"
+				})
+
+			})
+			$(".page_card_box button").on("mouseout",function(){
+				$(this).css({
+					"background":"url(images/idialog_s.png) no-repeat scroll 0px -59px",
+					"transform": "rotate(0deg)"
+				})
+			})
+		}
+		return false;
+	});
+	// $('body').mousedown(function(e){
+	// 	var click = e.which;
+	// 	if(click == 1){
+	// 		$(".page_card_box").removeClass("rightClick");
+	// 		$(".page_card_box button").css("display","none")
+	// 	}
+	// }) 
+	$("section").on("click",function(){
+		$(".page_card_box").removeClass("rightClick");
+		$(".page_card_box button").css("display","none")
+	})
+	$(".page_card_box .boxClose").click(function(){
+		$(this).parent("li").remove()
+	})
+	$(".addSite").click(function(){
+		var left = ($("body").width() - $("#add").width())/2
+		$("#add").css({
+			"left":left,
+			"display":"block"
+		})
+	})
+	$(".addSubmit").click(function(){
+		var addWeb = {};
+		addWeb.url = $(".url").val();
+		addWeb.site = $(".title").val();
+		addWeb.imgUrl = $(".imgurl").val();
+		allUrl.unshift(addWeb)
+		set_Site(allUrl);
+		var  html= '<li><button class="boxClose"></button><a href="'+addWeb.url+'" style="background:url('+addWeb.imgUrl+') no-repeat center 0px"></a><span><a href="'+addWeb.url+'">'+addWeb.site+'</a></span></li>'
+		$(".addSite").before(html)
+		$("#add").css("display","none")
+		$(".url").val("")
+		$(".title").val("")
+		$(".imgurl").val("")
+	})
+
+// 页面事件函数
+	function set_Site(data){
+		var site = ""
+		$.each(data,function(index,item){
+			if(data.length-1==index){
+				site+='{"url":"'+data[index].url+'","site":"'+data[index].site+'","imgUrl":"'+data[index].imgUrl+'"}'
+			}else{
+				site+='{"url":"'+data[index].url+'","site":"'+data[index].site+'","imgUrl":"'+data[index].imgUrl+'"},'
+			}
+		})
+		localStorage.webSiteInfo = '['+site+']'
+	}
+	function del_Site(){
+		$(this).parent("li").remove()
+	}
+	function add_Site(data){
+		
+	}
+})
+</script>
+<style type="text/css">
+body{
+	margin: 0;
+	background-image: url(images/banner-one.jpg);
+	height: 100%;
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	right: 0;
+	width: 100%;
+	overflow: hidden;
+}
+a{
+	color:#fff;
+	text-decoration: none;
+}
+section.page_one{
+	width:100%;
+	height:100%;
+	overflow-y: scroll;
+}
+ul.page_card_box {
+      margin: 0 auto;
+	width: 75%;
+	overflow: hidden;
+	padding: 2%;
+	margin-top: 40px;
+	border-radius: 10px;
+}
+ul.page_card_box li {
+    width: 220px;
+    height: 120px;
+    border-radius: 10px;
+    float: left;
+    list-style-type: none;
+    margin: 15px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.9);
+}
+ul.page_card_box li a {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+ul.page_card_box li span {
+    width: 100%;
+    height: 30px;
+    display: block;
+    line-height: 30px;
+    text-align: center;
+    margin-top: 0;
+    background: rgba(243, 176, 169, 0.6);
+    color: #fff;
+    text-shadow: 1px 1px 1px #000;
+    transition: margin-top 500ms;
+}
+.rightClick{
+	background: rgba(255,255,255,0.1);
+}
+.boxClose {
+	cursor: pointer;
+	border: none;
+	outline: none;
+	height: 35px;
+	width: 35px;
+	background: url(images/idialog_s.png) no-repeat scroll 0px -59px;
+	opacity: 1;
+	padding: 0;
+	display: none;
+	float: right;
+	transition:transform 100ms;
+}
+#add{
+	background: rgba(255,255,255,0.9);
+	position: fixed;
+	width: 770px;
+	height: 500px;
+	top: 50px;
+	display:none;
+	border-radius: 10px;
+}
+</style>
+</head>
+<body>
+<section class="page_one">
+	<div class="page_button"></div>
+	<ul  class="page_card_box">
+		<li class="addSite">
+			<a href="javascript:void(0)" style="background:url(images/logo.png) no-repeat center 25px"></a>
+			<span><a href="javascript:void(0)">添加网址</a></span>
+		</li>
+	</ul>
+</section>
+<div id="add">
+	<button class="addClose">关闭</button>
+	网址：<input type="text" value="" class="url">
+	标题：<input type="text" value="" class="title">
+	图片：<input type="text" value="" class="imgurl">
+	<button class="addSubmit">提交</button>
+</div>
+</body>
+</html>
