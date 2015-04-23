@@ -61,7 +61,7 @@ $(document).ready(function () {
 
 	var sHtml = ""
 	for(var i = 0; i < allUrl.length; i++){
-		sHtml = sHtml + '<li><button class="boxClose"></button><a href="'+allUrl[i].url+'" style="background:url('+allUrl[i].imgUrl+') no-repeat center 25px"></a><span><a href="'+allUrl[i].url+'">'+allUrl[i].site+'</a></span></li>'
+		sHtml = sHtml + '<li><button class="boxClose"></button><a href="'+allUrl[i].url+'" style="background:url('+allUrl[i].imgUrl+') no-repeat center"></a><span><a href="'+allUrl[i].url+'">'+allUrl[i].site+'</a></span></li>'
 	}
 	$(".page_card_box li").before(sHtml)
 
@@ -70,7 +70,7 @@ $(document).ready(function () {
 		$(this).find("span").css("margin-top","-30px");
 	})
 	$(".page_card_box li").on("mouseout",function(){
-		$(this).find("span").css("margin-top","0px");
+		$(this).find("span").css("margin-top","-3px");
 	})
 	$(document).bind("contextmenu",function(e){
 		if($(".page_card_box").hasClass("rightClick")){
@@ -107,6 +107,20 @@ $(document).ready(function () {
 		$(".page_card_box button").css("display","none")
 	})
 	$(".page_card_box .boxClose").click(function(){
+		var unsite = {}
+		unsite.url = $(this).parent("li").find("span").find("a").attr("href")
+		// unsite.site = $(this).parent("li").find("span").text()
+		// var img = $($(this).parent("li").find("a")[0]).css("background")
+		// img = img.substr(21)
+		// var imgnum;
+		// var patt = new RegExp("[)]","g");
+		// while (patt.exec(img) != null)  {
+		// 	imgnum = patt.lastIndex-1
+		//  }
+		// img = img.substr(0,imgnum)
+		// console.log(img)
+		// unsite.imgUrl = img
+		del_Site(unsite)
 		$(this).parent("li").remove()
 	})
 	$(".addSite").click(function(){
@@ -121,33 +135,67 @@ $(document).ready(function () {
 		addWeb.url = $(".url").val();
 		addWeb.site = $(".title").val();
 		addWeb.imgUrl = $(".imgurl").val();
-		allUrl.unshift(addWeb)
+		allUrl.push(addWeb)
 		set_Site(allUrl);
-		var  html= '<li><button class="boxClose"></button><a href="'+addWeb.url+'" style="background:url('+addWeb.imgUrl+') no-repeat center 0px"></a><span><a href="'+addWeb.url+'">'+addWeb.site+'</a></span></li>'
+		var  html= '<li><button class="boxClose"></button><a href="'+addWeb.url+'" style="background:url('+addWeb.imgUrl+') no-repeat center"></a><span><a href="'+addWeb.url+'">'+addWeb.site+'</a></span></li>'
 		$(".addSite").before(html)
 		$("#add").css("display","none")
 		$(".url").val("")
 		$(".title").val("")
 		$(".imgurl").val("")
 	})
-
+	$(".addClose").click(function(){
+		$("#add").css("display","none")
+		$(".url").val("")
+		$(".title").val("")
+		$(".imgurl").val("")
+	})
+	$(".addClose").on("mouseover",function(){
+		$(this).css({
+			"background":"url(images/idialog_s.png) no-repeat scroll 0px -94px",
+			"transform": "rotate(90deg)"
+		})
+	})
+	$(".addClose").on("mouseout",function(){
+		$(this).css({
+			"background":"url(images/idialog_s.png) no-repeat scroll 0px -59px",
+			"transform": "rotate(0deg)"
+		})
+	})
+	$(".url").on("blur",function () {
+		var url = $(".url").val();
+		NetPing(url)
+	})
 // 页面事件函数
 	function set_Site(data){
-		var site = ""
-		$.each(data,function(index,item){
-			if(data.length-1==index){
-				site+='{"url":"'+data[index].url+'","site":"'+data[index].site+'","imgUrl":"'+data[index].imgUrl+'"}'
-			}else{
-				site+='{"url":"'+data[index].url+'","site":"'+data[index].site+'","imgUrl":"'+data[index].imgUrl+'"},'
-			}
-		})
-		localStorage.webSiteInfo = '['+site+']'
+		localStorage.webSiteInfo = JSON.stringify(data)
 	}
-	function del_Site(){
-		$(this).parent("li").remove()
+	function del_Site(data){
+		var a;
+		for(var i = 0; i < allUrl.length; i++){
+			if(allUrl[i].url == data.url){
+				a = i;
+			}
+		}
+		allUrl.splice(a,1)
+		set_Site(allUrl)
 	}
 	function add_Site(data){
 		
+	}
+	function NetPing(url) {
+		$.ajax({
+			type: "GET",
+			cache: false,
+			url: url,
+			data: "json",
+			success: function() {
+				console.log(1);
+			},
+			error: function() {
+				console.log(0);
+			}
+		});
 	}
 })
 </script>
@@ -174,7 +222,7 @@ section.page_one{
 	overflow-y: scroll;
 }
 ul.page_card_box {
-      margin: 0 auto;
+	margin: 0 auto;
 	width: 75%;
 	overflow: hidden;
 	padding: 2%;
@@ -182,31 +230,31 @@ ul.page_card_box {
 	border-radius: 10px;
 }
 ul.page_card_box li {
-    width: 220px;
-    height: 120px;
-    border-radius: 10px;
-    float: left;
-    list-style-type: none;
-    margin: 15px;
-    overflow: hidden;
-    background: rgba(255,255,255,0.9);
+	width: 220px;
+	height: 120px;
+	border-radius: 10px;
+	float: left;
+	list-style-type: none;
+	margin: 15px;
+	overflow: hidden;
+	background: rgba(255,255,255,0.9);
 }
 ul.page_card_box li a {
-    display: block;
-    width: 100%;
-    height: 100%;
+	display: block;
+	width: 100%;
+	height: 100%;
 }
 ul.page_card_box li span {
-    width: 100%;
-    height: 30px;
-    display: block;
-    line-height: 30px;
-    text-align: center;
-    margin-top: 0;
-    background: rgba(243, 176, 169, 0.6);
-    color: #fff;
-    text-shadow: 1px 1px 1px #000;
-    transition: margin-top 500ms;
+	width: 100%;
+	height: 30px;
+	display: block;
+	line-height: 30px;
+	text-align: center;
+	margin-top: -3px;
+	background: rgba(243, 176, 169, 0.6);
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	transition: margin-top 200ms;
 }
 .rightClick{
 	background: rgba(255,255,255,0.1);
@@ -233,6 +281,22 @@ ul.page_card_box li span {
 	display:none;
 	border-radius: 10px;
 }
+.addClose{
+	cursor: pointer;
+	border: none;
+	outline: none;
+	height: 35px;
+	width: 35px;
+	background: url(images/idialog_s.png) no-repeat scroll 0px -59px;
+	opacity: 1;
+	padding: 0;
+	float: right;
+	transition: transform 100ms;
+}
+.addTitle {
+		width: 100%;
+		height: 40px;
+}
 </style>
 </head>
 <body>
@@ -240,17 +304,21 @@ ul.page_card_box li span {
 	<div class="page_button"></div>
 	<ul  class="page_card_box">
 		<li class="addSite">
-			<a href="javascript:void(0)" style="background:url(images/logo.png) no-repeat center 25px"></a>
+			<a href="javascript:void(0)" style="background:url(images/logo.png) no-repeat center"></a>
 			<span><a href="javascript:void(0)">添加网址</a></span>
 		</li>
 	</ul>
 </section>
 <div id="add">
-	<button class="addClose">关闭</button>
-	网址：<input type="text" value="" class="url">
-	标题：<input type="text" value="" class="title">
-	图片：<input type="text" value="" class="imgurl">
-	<button class="addSubmit">提交</button>
+	<div class="addTitle">
+		<button class="addClose"></button>
+	</div>
+	<div class="addsiteinfo">
+		<p>网址：<input type="text" value="" class="url"></p>
+		<p>标题：<input type="text" value="" class="title"></p>
+		<p>图片：<input type="text" value="" class="imgurl"></p>
+		<button class="addSubmit">提交</button>
+	</div>
 </div>
 </body>
 </html>
