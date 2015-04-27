@@ -5,7 +5,8 @@
 <script type="text/javascript" src="jquery-2.1.3.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
-	var allUr
+	var allUr;
+	var key;
 	if(localStorage.webSiteInfo){
 		allUrl = $.parseJSON(localStorage.webSiteInfo)
 	}else{
@@ -58,12 +59,12 @@ $(document).ready(function () {
 		]
 		set_Site(allUrl);
 	}
-
+	cut_page(allUrl)
 	var sHtml = ""
 	for(var i = 0; i < allUrl.length; i++){
 		sHtml = sHtml + '<li><button class="boxClose"></button><a href="'+allUrl[i].url+'" style="background:url('+allUrl[i].imgUrl+') no-repeat center"></a><span><a href="'+allUrl[i].url+'">'+allUrl[i].site+'</a></span></li>'
 	}
-	$(".page_card_box li").before(sHtml)
+	$(".addSite").before(sHtml)
 
 // 页面事件绑定
 	$(".page_card_box li").on("mouseover",function(){
@@ -132,24 +133,21 @@ $(document).ready(function () {
 	})
 	$(".addSubmit").click(function(){
 		var addWeb = {};
-		addWeb.url = $(".url").val();
+		var url = $(".url").val();
+		var patt = new RegExp("[//]","g");
+		if(patt.exec(url) == null){
+			url = "http://" + url;
+		}
+		addWeb.url = url;
 		addWeb.site = $(".title").val();
-		addWeb.imgUrl = $(".imgurl").val();
+		addWeb.imgUrl = $(".imgurl").attr("src");
 		allUrl.push(addWeb)
 		set_Site(allUrl);
 		var  html= '<li><button class="boxClose"></button><a href="'+addWeb.url+'" style="background:url('+addWeb.imgUrl+') no-repeat center"></a><span><a href="'+addWeb.url+'">'+addWeb.site+'</a></span></li>'
 		$(".addSite").before(html)
-		$("#add").css("display","none")
-		$(".url").val("")
-		$(".title").val("")
-		$(".imgurl").val("")
+		add_Close()
 	})
-	$(".addClose").click(function(){
-		$("#add").css("display","none")
-		$(".url").val("")
-		$(".title").val("")
-		$(".imgurl").val("")
-	})
+	$(".addClose").click(add_Close())
 	$(".addClose").on("mouseover",function(){
 		$(this).css({
 			"background":"url(images/idialog_s.png) no-repeat scroll 0px -94px",
@@ -163,8 +161,65 @@ $(document).ready(function () {
 		})
 	})
 	$(".url").on("blur",function () {
+		key=0
 		var url = $(".url").val();
-		NetPing(url)
+		var imgnum;
+		var patt = new RegExp("[//]","g");
+		if(patt.exec(url) == null){
+			url = "http://" + url;
+			var patt = new RegExp("[www]","g");
+			if(patt.exec(url) == null){
+				patt = new RegExp("[//]","g");
+				while (patt.exec(url) != null)  {
+					imgnum = patt.lastIndex
+				}
+				url = url.substr(imgnum)
+			}else{
+				while (patt.exec(url) != null)  {
+					imgnum = patt.lastIndex+1
+				}
+				url = url.substr(imgnum)
+			}
+		}else{
+			var patt = new RegExp("[www]","g");
+			if(patt.exec(url) == null){
+				patt = new RegExp("[//]","g");
+				while (patt.exec(url) != null)  {
+					imgnum = patt.lastIndex
+				}
+				url = url.substr(imgnum)
+			}else{
+				while (patt.exec(url) != null)  {
+					imgnum = patt.lastIndex+1
+				}
+				url = url.substr(imgnum)
+			}
+		}
+		var surl = "http://hao.weidunewtab.com/m/"+ url +".png"
+		NetPing(surl)
+		console.log(surl)
+	})
+
+	$(".s_btn").click(function(){
+		var type = $(this).attr("name");
+		$(".s_btn").css("background-position-y","0px")
+		switch(type){
+			case "baidu":
+				$(".baidu_btn").css("background-position-y","30px")
+				$("#quickSearchForm").attr("action","http://www.baidu.com/s")
+				$(".searchKeyword").attr("name","wd")
+				break
+			case "taobao":
+				$(".taobao_btn").css("background-position-y","30px")
+				$("#quickSearchForm").attr("action","http://s8.taobao.com/search")
+				$(".searchKeyword").attr("name","q")
+				break
+			case "google":
+				$(".google_btn").css("background-position-y","30px")
+				$("#quickSearchForm").attr("action","http://www.google.com.hk/cse")
+				$(".searchKeyword").attr("name","q")
+				break
+		}
 	})
 // 页面事件函数
 	function set_Site(data){
@@ -183,19 +238,51 @@ $(document).ready(function () {
 	function add_Site(data){
 		
 	}
+	function add_Close(){
+		$("#add").css("display","none")
+		$(".url").val("")
+		$(".title").val("")
+		$(".imgurl").remove()
+		$("#imgurl").append('<input type="text" value="" class="imgurl">')
+	}
 	function NetPing(url) {
 		$.ajax({
 			type: "GET",
 			cache: false,
 			url: url,
-			data: "json",
+			data: "",
 			success: function() {
-				console.log(1);
+				$(".imgurl").remove()
+				$("#imgurl").append('<img src="'+url+'" class="imgurl">')
 			},
 			error: function() {
-				console.log(0);
+				$(".imgurl").val("没图")
 			}
 		});
+	}
+	function cut_page(data){
+		var num = data.length + 1;
+		var pageNum = parseInt(num/12)+1;
+		for(var i = 1; i < pageNum;i++){
+			add_page(i)
+		}
+		var bodyW = 100*pageNum;
+		var pageW = 100/pageNum;
+		$("body").css("width",bodyW+'%')
+		$(".page").css("width",pageW+'%')
+		console.log(pageNum)
+	}
+	function add_page(data){
+		var pageHtml = '<section class="page '+data+'">'+
+			'<div class="page_button"></div>'+
+			'<ul  class="page_card_box">'+
+				'<li class="addSite">'+
+					'<a href="javascript:void(0)" style="background:url(images/logo.png) no-repeat center"></a>'+
+					'<span><a href="javascript:void(0)">添加网址</a></span>'+
+				'</li>'+
+			'</ul>'+
+		'</section>';
+		$("#add").before(pageHtml)
 	}
 })
 </script>
@@ -216,12 +303,12 @@ a{
 	color:#fff;
 	text-decoration: none;
 }
-section.page_one{
+.page{
 	width:100%;
 	height:100%;
 	overflow-y: scroll;
 }
-ul.page_card_box {
+.page_card_box {
 	margin: 0 auto;
 	width: 75%;
 	overflow: hidden;
@@ -229,7 +316,7 @@ ul.page_card_box {
 	margin-top: 40px;
 	border-radius: 10px;
 }
-ul.page_card_box li {
+.page_card_box li {
 	width: 220px;
 	height: 120px;
 	border-radius: 10px;
@@ -239,12 +326,12 @@ ul.page_card_box li {
 	overflow: hidden;
 	background: rgba(255,255,255,0.9);
 }
-ul.page_card_box li a {
+.page_card_box li a {
 	display: block;
 	width: 100%;
 	height: 100%;
 }
-ul.page_card_box li span {
+.page_card_box li span {
 	width: 100%;
 	height: 30px;
 	display: block;
@@ -294,15 +381,69 @@ ul.page_card_box li span {
 	transition: transform 100ms;
 }
 .addTitle {
-		width: 100%;
-		height: 40px;
+	width: 100%;
+	height: 40px;
+}
+.s_btn {
+	display: block;
+	width: 30px;
+	height: 30px;
+	float: left;
+	margin: 30px 10px 10px 10px;
+	cursor:pointer;
+}
+
+.baidu_btn {
+	background: url(images/baidu.png) center;
+	background-position-y:30px;
+}
+
+.taobao_btn {
+	background: url(images/taobao.png) center;
+	background-position-y:0px;
+}
+
+.google_btn {
+	background: url(images/google.png) center;
+	background-position-y:0px;
+}
+
+.searchKeyword {
+	width: 170px;
+	margin-left: 10px;
+	height: 28px;
+	line-height: 30px;
+	border-radius: 5px 0px 0px 5px;
+	border: none;
+	float: left;
+}
+
+.searchBtn {
+	background: url(images/searchButton.png) center;
+	width: 30px;
+	height: 30px;
+	margin-left: 0px;
+	margin-top: 0px;
+	border-radius: 0px 5px 5px 0px;
+	border: none;
+	float: left;
 }
 </style>
 </head>
 <body>
-<section class="page_one">
+<section class="page page_0">
 	<div class="page_button"></div>
 	<ul  class="page_card_box">
+		<li class="search">
+			<em class="baidu_btn s_btn" name="baidu"></em>
+			<em class="taobao_btn s_btn" name="taobao"></em>
+			<em class="google_btn s_btn" name="google"></em>
+			<form id="quickSearchForm" action="http://www.baidu.com/s" target="_blank" style="height: 120px">
+				<input type="text" name="wd" class="searchKeyword" placeholder="点击搜索" autocomplete="off">
+				<input type="submit" class="searchBtn" value="">
+			</form>
+			<span style="float:left;"><a href="javascript:void(0)">快速搜索</a></span>
+		</li>
 		<li class="addSite">
 			<a href="javascript:void(0)" style="background:url(images/logo.png) no-repeat center"></a>
 			<span><a href="javascript:void(0)">添加网址</a></span>
@@ -316,7 +457,7 @@ ul.page_card_box li span {
 	<div class="addsiteinfo">
 		<p>网址：<input type="text" value="" class="url"></p>
 		<p>标题：<input type="text" value="" class="title"></p>
-		<p>图片：<input type="text" value="" class="imgurl"></p>
+		<p id="imgurl">图片：<input type="text" value="" class="imgurl"></p>
 		<button class="addSubmit">提交</button>
 	</div>
 </div>

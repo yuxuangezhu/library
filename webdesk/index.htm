@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<script type="text/javascript" src="jquery-2.1.3.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+
+	$("button").click(function(){
+		// var ss = ["世界上各种种族群体之间的差异主要是生物意义上的，而不是社会和文化意义上的差异。", "泰勒和马林诺夫斯基对文化的定义大体包括的层面不包含：", "社会人类学又称人类文化学。", "社会人类学分为的学派不包括：", "“文化是一个复合体，它包括作为社会成员的人所获得的知识、信仰、艺术、道德、法律、习俗以及其他能力和习惯。”是谁的观点：", "社会人类学分为很多学派，比如X学派，功能学派、传播学派和心理学派。", "世界上各种族群之间的差异主要是生物意义上的差异。", "房屋、器皿、机械等属于文化定义中的哪一个层面：（）", "泰勒和马林诺夫斯基对文化的定义不包括下面哪一个层面：（）", "下面哪一项不属于人类学的三大块：（）"]
+		// for(var i = 0; i < ss.length;i++){
+			// searchtm(ss[i])
+		// }
+		var aa = $("#iframe").contents().find("iframe").contents().find("iframe").contents().find(".TiMu").find(".Zy_TItle").find("div");
+		var ss=[];
+		for(var i=0; i <aa.length ;i++){
+			ss[i]=$(aa[i]).text()
+		};
+		searchtm(ss[0])
+		var dd = [];
+		var shu = 0;
+		function searchtm(data){
+			if(shu>=ss.length){
+				alert("查询完成!")
+				// for(var i=0; i <aa.length ;i++){
+				// 	$(aa[i]).text(dd[i])
+				// };
+				console.log(dd)
+				return
+			}
+			$.ajax({
+				dataType:'jsonp',
+				url: "http://lab.ldsnwangjun.cn/post.php",
+				data: {key:data},
+				jsonp:'aaa',
+				success: function(result){
+					//$("body").append(result);
+					var num1;
+					var num2;
+					var res;
+					//var patt = new RegExp("-->","g");
+					var patt2 = new RegExp("</h2>","g");
+					// while (patt.exec(result) != null)  {
+					// 	num1 = patt.lastIndex
+					// }
+					while (patt2.exec(result) != null)  {
+						num2 = patt2.lastIndex-7
+					}
+					num2 = num2 - 8;
+					res = result.substr(8,num2)
+					dd[shu] = res;
+					shu = shu +1;
+					searchtm(ss[shu])
+				}
+			})
+		}
+	})
+})
+</script>
+</head>
+<body>
+<button>dvcdffvdf</button>
+</body>
+</html>
