@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>推箱子</title>
+<meta name="description" content="">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<script type="text/javascript" src="http://lib.snowos.cn/jquery.js"></script>
+<style type="text/css">
+body {
+	text-align: center;
+}
+.ext-box {
+	width: 440px;
+    height: 440px;
+}
+.inner-box {
+	margin: 0px;
+    list-style-type: none;
+    padding: 0;
+}
+.box-li {
+	width: 40px;
+    height: 40px;
+    /*border: 1px solid #000;*/
+    background-color: #000;
+    float: left;
+}
+.wall,.road,.box,.people,.spot {
+	background-size: 40px;
+}
+.wall {
+	background-image: url(images/wall.png);
+}
+.road {
+	background-image: url(images/road.png);
+}
+.box {
+	background-image: url(images/box.png);
+}
+.people {
+	background-image: url(images/people.gif);
+}
+.spot {
+	background-image: url(images/spot.jpg);
+}
+.init {
+	width: 100px;
+    height: 30px;
+    margin-top: 10px;
+    border-radius: 10px;
+    background-color: #0064CC;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+}
+.remember {
+	width: 100px;
+    height: 30px;
+    margin-top: 10px;
+    border-radius: 10px;
+    background-color: #0064CC;
+    border: none;
+    color: #fff;
+    font-size: 15px;
+}
+</style>
+</head>
+<body>
+<script type="text/javascript">
+$(document).ready(function() {
+	(initPage = function () {
+		var w = 11,
+			h = 11,
+			teml = '';
+			noteKey = [];
+		var wall = ['1,1','1,2','1,3','1,4','1,5','2,1','2,5','3,1','3,5','4,1','4,5','5,1','5,2','5,3','5,5','5,6','5,7','5,9','4,7','3,7','3,8','3,9','4,9','6,3','6,2','7,2','8,2','9,2','9,3','9,4','9,5','9,6','8,6','7,6','8,7','8,8','8,9','7,9','6,9'];
+		var road = ['2,3','2,4','3,2','4,2','4,4','5,4','6,4','7,4','8,4','8,3','7,3','6,5','6,6','6,7','7,7','7,8','7,5','8,5']
+		var box = ['3,3','3,4','4,3']
+		var people = ['2,2']
+		var spot = ['1,1','1,1','4,8','5,8','6,8']
+		for (var i = 0; i < h; i++) {
+		    for (var j = 0; j < w; j++) {
+		        var coord = i + ',' + j;
+		        if (wall.indexOf(coord) != -1) {
+		            teml = teml + '<li class="box-li wall" init="wall" coordx="' + i + '" coordy="' + j + '"></li>';
+		        } else if (box.indexOf(coord) != -1) {
+		            teml = teml + '<li class="box-li box" init="box" coordx="' + i + '" coordy="' + j + '"></li>';
+		        } else if (people.indexOf(coord) != -1) {
+		            teml = teml + '<li class="box-li people" init="people" coordx="' + i + '" coordy="' + j + '"></li>';
+		        } else if (spot.indexOf(coord) != -1) {
+		            teml = teml + '<li class="box-li spot" init="spot" coordx="' + i + '" coordy="' + j + '"></li>';
+		        } else if (road.indexOf(coord) != -1) {
+		            teml = teml + '<li class="box-li road" init="road" coordx="' + i + '" coordy="' + j + '"></li>';
+		        } else {
+		            teml = teml + '<li class="box-li" coordx="' + i + '" coordy="' + j + '"></li>';
+		        }
+		    }
+		}
+		$('.inner-box').append(teml);
+		// var data = [],
+		//     name = 'road';
+		// localStorage.setItem(name, JSON.stringify(data));
+		// $('.box-li').on('click', function () {
+		//  $(this).addClass(name);
+		//  var x = $(this).attr('coordx'),
+		//      y = $(this).attr('coordy');
+		//  data = JSON.parse(localStorage.getItem(name))
+		//  data.push(x + ',' + y})
+		//  localStorage.setItem(name, JSON.stringify(data))
+		//  console.log(localStorage.data)
+		// })
+		nowX = +$('.people').attr('coordx'),
+		nowY = +$('.people').attr('coordy');
+		window.formatAction = function(x, y, el, type) {
+		    var acType = {
+		        'up': {
+		            'x': x - 1,
+		            'y': y
+		        },
+		        'down': {
+		            'x': x + 1,
+		            'y': y
+		        },
+		        'left': {
+		            'x': x,
+		            'y': y - 1
+		        },
+		        'right': {
+		            'x': x,
+		            'y': y + 1
+		        }
+		    }
+		    for (var i = 0; i < $('.box-li').length; i++) {
+		        if ($($('.box-li')[i]).attr('coordx') == acType[type].x && $($('.box-li')[i]).attr('coordy') == acType[type].y) {
+		            var actClass = $($('.box-li')[i]).attr('class').split(' ')[1];
+		            actionType(actClass, $($('.box-li')[i]), type, el);
+		        }
+		    }
+		}
+
+		function actionType(type, el, action, source) {
+		    var sourceType = source.attr('class').split(' ')[1];
+		    // console.log(type)
+		    switch (type) {
+		        case 'wall':
+		            console.log('撞墙了⁽⁽ ◟(눈_눈)◞ ⁾⁾');
+		            break;
+		        case 'road':
+		            var peo = $('.people');
+		            if (source.attr('init') == 'spot') {
+		                peo.removeClass('people').addClass('spot');
+		                el.removeClass('road').addClass('people');
+		            } else if (sourceType == 'people') {
+		                peo.removeClass('people').addClass('road');
+		                el.removeClass('road').addClass('people');
+		            } else {
+		                peo.removeClass('people').addClass('road');
+		                source.removeClass('box').addClass('people');
+		                el.removeClass('road').addClass('box');
+		            }
+		            nowX = +$('.people').attr('coordx'),
+		            nowY = +$('.people').attr('coordy');
+		            break;
+		        case 'spot':
+		            $('.people').addClass($('.people').attr('init')).removeClass('people');
+		            if (sourceType == 'people') {
+		                el.removeClass('spot').addClass('people');
+		            } else if (sourceType == 'box') {
+		                source.removeClass('box').addClass('people');
+		                el.removeClass('spot').addClass('box');
+		            }
+		            nowX = +$('.people').attr('coordx'),
+		            nowY = +$('.people').attr('coordy');
+		            if ($('.spot').length == 0 && $('.people').attr('init') != 'spot') {
+		                alert('过关了～✧*｡٩(ˊωˋ*)و✧*｡');
+		            }
+		            break;
+		        case 'box':
+		            if (source.attr('class').split(' ')[1] == 'people') {
+		                var acType = {
+		                    'up': {
+		                        'x': nowX - 1,
+		                        'y': nowY
+		                    },
+		                    'down': {
+		                        'x': nowX + 1,
+		                        'y': nowY
+		                    },
+		                    'left': {
+		                        'x': nowX,
+		                        'y': nowY - 1
+		                    },
+		                    'right': {
+		                        'x': nowX,
+		                        'y': nowY + 1
+		                    }
+		                }
+		                formatAction(acType[action].x, acType[action].y, el, action)
+		            } else {
+		            	console.log('都是箱子，推啥推ヽ(￣д￣;)ノ')
+		            }
+		            break;
+		    }
+		}
+	})();
+	$(document).on('keydown', function(e) {
+		e = e || event;
+		var key = e.keyCode;
+		var keyType = {
+		    '38': 'up',
+		    '40': 'down',
+		    '37': 'left',
+		    '39': 'right'
+		}
+		noteKey.push(keyType[key]);
+		localStorage.setItem('noteAction', JSON.stringify(noteKey))
+		formatAction(nowX, nowY, $('.people'), keyType[key]);
+	})
+	var ans = ["right","right","down","down","down","down","right","down","down","left","left","up","right","down","right","up","left","up","right","right","right","down","right","up","up","down","left","left","left","left","up","up","up","up","left","left","down","right","up","right","down","down","down","down","right","down","down","left","left","up","right","down","right","up","left","up","right","right","right","down","right","up","left","left","left","left","up","up","up","left","left","down","right","up","right","down","down","down","right","down","down","left","left","up","right","down","right","up","left","up","right","right","right"]
+	$('.init').on('click', function() {
+	    $('.inner-box').empty();
+	    initPage();
+	})
+	$('.remember').on('click',function() {
+		$('.inner-box').empty();
+	    initPage();
+	    var noteAction = JSON.parse(localStorage.getItem('noteAction'));
+	    var num = 0;
+	    (function goAction() {
+	    	if (num >= noteAction.length) {
+	    		return false;
+	    	}
+	    	nowX = +$('.people').attr('coordx'),
+		    nowY = +$('.people').attr('coordy');
+	    	console.log(noteAction[num],nowX, nowY)
+	    	formatAction(nowX, nowY, $('.people'), noteAction[num]);
+	    	num = num + 1;
+	    	setTimeout(function() {
+		    	goAction();
+		    },200)
+	    })();
+	})
+	
+})
+</script>
+<div class="ext-box">
+	<ul class="inner-box"></ul>
+</div>
+<button class="remember">记忆</button>
+<button class="init">重置</button>
+<!-- <img src="txz.png" style="width: 377px"> -->
+</body>
+</html>
