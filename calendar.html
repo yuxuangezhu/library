@@ -16,6 +16,9 @@ $(document).ready(function() {
     if (bigMonth.indexOf(month) != -1) {
         daysNum = 31;
     }
+    if (month == 2) {
+        daysNum = (year%400 == 0 ? true : ((year%4 == 0 && year%100 != 0) ? true : false)) ? 29 : 28;
+    }
     daysNum = daysNum + firstWeek;
     for(var i = 0; i < daysNum; i++) {
         if (i >= firstWeek) {
