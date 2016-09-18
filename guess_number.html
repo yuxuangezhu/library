@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<title>游戏－猜数字</title>
+<meta name="description" content="">
+<meta name="viewport" content="initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="keywords" content="">
+<link href="" rel="stylesheet">
+<link rel="stylesheet" href="http://cdn.bootcss.com/bootstrap/3.3.0/css/bootstrap.min.css">
+<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<style type="text/css">
+body {
+	text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="Scope">1-<input type="number" value="1000"></div>
+<div class="num_box">本次数字：<span></span></div>
+<button class="start">生成数字</button>  
+<script type="text/javascript">
+$(document).ready(function() {
+	var end = 1000;
+	$('.Scope input').on('change', function() {
+		end = $(this).val();
+	})
+	$('.start').on('click', function() {
+		var num = parseInt(Math.random() * end)
+		$('.num_box span').text(num)
+	})
+})
+</script> 
+</body>
+</html>
