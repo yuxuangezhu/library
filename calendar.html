@@ -29,10 +29,12 @@ $(document).ready(function() {
     var month = time.getMonth() + 1;
     var today = time.getDate();
     var hour = time.getHours();
+    //hour.padStart(2, '0');
     if (parseInt(hour) < 10) {
         hour = "0" + hour;
     } 
     var min = time.getMinutes();
+    //min.padStart(2, '0');
     if (parseInt(min) < 10) {
         min = "0" + min;
     } 
