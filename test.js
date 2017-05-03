@@ -1,5 +1,5 @@
 // 获取当前页面星号密码
-(function({
+(function(){
 	var s, F, j, f, i;
 	s = "";
 	F = document.forms;
@@ -238,3 +238,28 @@ var ss, dd, aa, url;
 
 	}
 })();
+
+// 播放
+(function() {
+	document.body.innerHTML = '';
+	var url = window.location.href;
+	var baseUrl = 'http://www.shankuwang.com/ckplayer/play.html?';
+	var iframe = document.createElement('iframe');
+	iframe.src = baseUrl + url;
+	iframe.style = 'position: fixed;z-index: 100000;width: 100%;height: 100%;top: 0;left: 0;background-color: #fff;';
+	document.body.appendChild(iframe);
+})()
+javascript:(function(){var script=document.createElement('script');script.charset='utf-8';script.src='http://lib.snowos.cn/play/go.js';document.body.appendChild(script);})()
+setInterval(getGrab, 50)
+function getGrab() {
+	$.ajax({
+		url:'http://m.mwee.cn/api/client/v2/grab/join?id=9&cityid=19&ssid=8nEDAGLcPfjnqw9gZ0RrTOhSNjnSWmcVdhClgfnROZn3zg2TLZXmleS8eY-BE4XTyEzGY-B1M340uwAUTQXyCRF615zLNd4NjQx0KMfY-BuFdJJfmU3Rr7nm7tQ1sTIZUsFsD1&latitude=40.06809511949397&longitude=116.3103035024574&debug=1',
+		type: "GET",
+		success: function(data){
+			console.log(data)
+		}
+	}) 
+}
+
+// 页面添加jquery
+javascript:(function(){var script = document.createElement('script');script.src = (window.location.protocol=='file:'?'http:':window.location.protocol)+'//itbugs.cn/yuxuan/js/jquery-1.11.2.min.js';document.body.appendChild(script);})()
